@@ -1,0 +1,117 @@
+/* GFM Feature Styles for md2web */
+
+/* Responsive Tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  border-color: rgb(38 38 38);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prose thead {
+  background-color: rgb(23 23 23);
+  border-bottom: 1px solid rgb(38 38 38);
+}
+
+.prose th {
+  border: 1px solid rgb(38 38 38);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  text-align: left;
+  color: rgb(226 232 240);
+}
+
+.prose td {
+  border: 1px solid rgb(38 38 38);
+  padding: 0.5rem 1rem;
+  color: rgb(203 213 225);
+}
+
+.prose tbody tr:hover {
+  background-color: rgb(38 38 38 / 0.5);
+  transition: background-color 0.2s;
+}
+
+/* Task Lists */
+.prose ul.task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose ul.task-list li {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose input[type="checkbox"] {
+  pointer-events: none;
+  accent-color: rgb(34 197 94);
+  margin-right: 0.5rem;
+}
+
+.prose ul.task-list li input[type="checkbox"]:checked + p,
+.prose ul.task-list li input[type="checkbox"]:checked + span {
+  text-decoration: line-through;
+  color: rgb(163 163 163);
+}
+
+.prose ul.task-list li input[type="checkbox"]:not(:checked) + p,
+.prose ul.task-list li input[type="checkbox"]:not(:checked) + span {
+  color: rgb(241 245 249);
+}
+
+/* Blockquotes */
+.prose blockquote {
+  border-left: 4px solid rgb(14 165 233);
+  background-color: rgb(23 23 23 / 0.5);
+  padding-left: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+  color: rgb(226 232 240);
+}
+
+/* Footnotes */
+.prose sup.footnote-ref a {
+  color: rgb(56 189 248);
+  text-decoration: none;
+}
+
+.prose sup.footnote-ref a:hover {
+  color: rgb(125 211 252);
+}
+
+.prose .footnotes {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(38 38 38);
+  font-size: 0.875rem;
+}
+
+.prose .footnotes h3 {
+  font-weight: 600;
+  color: rgb(226 232 240);
+  margin-bottom: 0.75rem;
+}
+
+.prose .footnotes ol {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose .footnotes li {
+  margin-bottom: 0.5rem;
+}
+
+.prose .footnotes li a {
+  color: rgb(56 189 248);
+  text-decoration: none;
+  margin-left: 0.5rem;
+}
+
+.prose .footnotes li a:hover {
+  color: rgb(125 211 252);
+}

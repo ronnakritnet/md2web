@@ -47,7 +47,7 @@ import Error from '../components/Error.astro';
     }
   }
 
-  function routeMode() {
+  async function routeMode() {
     if (typeof window === 'undefined') return;
     
     const hash = window.location.hash;
@@ -73,7 +73,7 @@ import Error from '../components/Error.astro';
         }
         
         if (renderedContent) {
-          renderedContent.innerHTML = parse(payload.markdown);
+          renderedContent.innerHTML = await parse(payload.markdown);
         }
         
         showMode('render');
