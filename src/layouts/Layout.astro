@@ -2,22 +2,53 @@
 import '../styles/global.css';
 
 interface Props {
-  title: string;
+  title?: string;
+  description?: string;
+  canonicalURL?: string;
 }
 
-const { title = 'md2web - Instant Markdown to Web Page' } = Astro.props;
+const {
+  title = 'md2web - Instant Markdown to Web Page',
+  description = 'Instantly convert Markdown into beautiful, shareable web pages with hash-based URLs. No backend required.',
+  canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://md2web.ronnakrit.net').href,
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Instantly convert Markdown beautiful web pages with shareable URLs" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="markdown to web, md2web, markdown publisher, instant web page, markdown share, ronnakrit" />
+    <meta name="author" content="Ronnakrit" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    
+
+    <!-- Open Graph / Facebook / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="md2web" />
+
+    <!-- <meta property="og:image" content={new URL('/og-image.png', canonicalURL).href} /> -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <!-- <meta property="twitter:image" content={new URL('/og-image.png', canonicalURL).href} /> -->
+
     <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
