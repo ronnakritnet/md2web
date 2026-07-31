@@ -95,6 +95,7 @@ import UrlModal from './UrlModal.astro';
   import { insertMarkdown } from '../utils/editor/markdown-formatter';
   import { saveDraft, restoreDraft } from '../utils/editor/draft-persistence';
   import { generateUrl, closeModal } from '../utils/editor/url-generator';
+  import { setMobileView, setupResponsiveView } from '../utils/editor/responsive-view';
 
   const markdownEditor = document.getElementById('markdown-editor') as HTMLTextAreaElement | null;
   const markdownPreview = document.getElementById('markdown-preview') as HTMLElement | null;
@@ -109,60 +110,7 @@ import UrlModal from './UrlModal.astro';
   const viewEditBtn = document.getElementById('view-edit-btn') as HTMLButtonElement | null;
   const viewPreviewBtn = document.getElementById('view-preview-btn') as HTMLButtonElement | null;
 
-  let mediaQuery: MediaQueryList | null = null;
-
-  // Mobile view toggle logic
-  function setMobileView(view: 'edit' | 'preview') {
-    if (!editorPane || !previewPane || !viewEditBtn || !viewPreviewBtn) return;
-
-    if (view === 'edit') {
-      // Editor pane: show with flex
-      editorPane.classList.remove('hidden');
-      editorPane.classList.add('flex');
-      // Preview pane: hide
-      previewPane.classList.add('hidden');
-      previewPane.classList.remove('flex');
-      // Update button states
-      viewEditBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-      viewEditBtn.classList.add('bg-green-600', 'text-white');
-      viewPreviewBtn.classList.remove('bg-green-600', 'text-white');
-      viewPreviewBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-    } else {
-      // Editor pane: hide
-      editorPane.classList.add('hidden');
-      editorPane.classList.remove('flex');
-      // Preview pane: show with flex
-      previewPane.classList.remove('hidden');
-      previewPane.classList.add('flex');
-      // Update button states
-      viewPreviewBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-      viewPreviewBtn.classList.add('bg-green-600', 'text-white');
-      viewEditBtn.classList.remove('bg-green-600', 'text-white');
-      viewEditBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-      // Update preview when switching to preview view
-      updatePreview();
-    }
-  }
-
-  // Responsive view handling
-  function handleResponsiveView(e: MediaQueryListEvent | MediaQueryList) {
-    const isDesktop = e.matches;
-
-    if (isDesktop) {
-      // Desktop: show both panes side-by-side
-      if (editorPane) {
-        editorPane.classList.remove('hidden');
-        editorPane.classList.add('flex');
-      }
-      if (previewPane) {
-        previewPane.classList.remove('hidden');
-        previewPane.classList.add('flex');
-      }
-    } else {
-      // Mobile: default to edit mode (single pane)
-      setMobileView('edit');
-    }
-  }
+  let responsiveViewCleanup: (() => void) | null = null;
 
   async function updatePreview() {
     if (!markdownEditor || !markdownPreview || !charCount) return;
@@ -210,12 +158,17 @@ import UrlModal from './UrlModal.astro';
   }
 
   // Mobile view toggle event listeners
-  if (viewEditBtn) {
-    viewEditBtn.addEventListener('click', () => setMobileView('edit'));
-  }
+  if (viewEditBtn && viewPreviewBtn && editorPane && previewPane) {
+    const responsiveElements = {
+      editorPane,
+      previewPane,
+      viewEditBtn,
+      viewPreviewBtn
+    };
+    const responsiveOptions = { updatePreview };
 
-  if (viewPreviewBtn) {
-    viewPreviewBtn.addEventListener('click', () => setMobileView('preview'));
+    viewEditBtn.addEventListener('click', () => setMobileView(responsiveElements, 'edit', responsiveOptions));
+    viewPreviewBtn.addEventListener('click', () => setMobileView(responsiveElements, 'preview', responsiveOptions));
   }
 
   if (generateUrlBtn) {
@@ -269,11 +222,16 @@ import UrlModal from './UrlModal.astro';
     if (themeSelector) {
       themeSelector.removeEventListener('change', updatePreviewTheme);
     }
-    if (viewEditBtn) {
-      viewEditBtn.removeEventListener('click', () => setMobileView('edit'));
-    }
-    if (viewPreviewBtn) {
-      viewPreviewBtn.removeEventListener('click', () => setMobileView('preview'));
+    if (viewEditBtn && viewPreviewBtn && editorPane && previewPane) {
+      const responsiveElements = {
+        editorPane,
+        previewPane,
+        viewEditBtn,
+        viewPreviewBtn
+      };
+      const responsiveOptions = { updatePreview };
+      viewEditBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'edit', responsiveOptions));
+      viewPreviewBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'preview', responsiveOptions));
     }
     if (generateUrlBtn) {
       generateUrlBtn.removeEventListener('click', () => {
@@ -289,8 +247,8 @@ import UrlModal from './UrlModal.astro';
         }
       });
     }
-    if (mediaQuery) {
-      mediaQuery.removeEventListener('change', handleResponsiveView);
+    if (responsiveViewCleanup) {
+      responsiveViewCleanup();
     }
     document.removeEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape' && urlModal && !urlModal.classList.contains('hidden')) {
@@ -309,10 +267,15 @@ import UrlModal from './UrlModal.astro';
     }
 
     // Set up responsive view listener
-    mediaQuery = window.matchMedia('(min-width: 768px)');
-    mediaQuery.addEventListener('change', handleResponsiveView);
-
-    // Initial view setup
-    handleResponsiveView(mediaQuery);
+    if (editorPane && previewPane && viewEditBtn && viewPreviewBtn) {
+      const responsiveElements = {
+        editorPane,
+        previewPane,
+        viewEditBtn,
+        viewPreviewBtn
+      };
+      const responsiveOptions = { updatePreview };
+      responsiveViewCleanup = setupResponsiveView(responsiveElements, responsiveOptions);
+    }
   }
 </script>
