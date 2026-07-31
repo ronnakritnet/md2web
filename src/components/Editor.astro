@@ -190,6 +190,12 @@ import UrlModal from './UrlModal.astro';
         closeModal(urlModal);
       }
     });
+    formatButtons.forEach(btn => {
+      btn.removeEventListener('click', () => {
+        const format = btn.getAttribute('data-format');
+        if (format && markdownEditor) insertMarkdown(markdownEditor, format, updatePreview);
+      });
+    });
   }
 
   window.addEventListener('beforeunload', cleanup);
