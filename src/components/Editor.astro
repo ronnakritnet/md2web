@@ -8,6 +8,15 @@ import UrlModal from './UrlModal.astro';
   <!-- Full-Width Formatting Toolbar -->
   <div class="bg-gray-800 border-b border-slate-700 px-4 py-2 flex justify-between items-center">
     <div class="flex gap-1 flex-wrap">
+      <!-- Mobile View Toggle Buttons -->
+      <div class="flex md:hidden gap-1 mr-2">
+        <button id="view-edit-btn" class="view-toggle-btn bg-green-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors" aria-label="Edit view">
+          Edit
+        </button>
+        <button id="view-preview-btn" class="view-toggle-btn bg-slate-700 text-slate-300 hover:bg-slate-600 px-3 py-1.5 rounded text-sm font-medium transition-colors" aria-label="Preview view">
+          Preview
+        </button>
+      </div>
       <button data-format="bold" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white p-1.5 rounded transition-colors" title="Bold (Ctrl+B)" aria-label="Bold text">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
       </button>
@@ -43,7 +52,7 @@ import UrlModal from './UrlModal.astro';
       </button>
     </div>
     <div class="flex items-center gap-3">
-      <label class="text-sm text-slate-400">Background Theme</label>
+      <label class="text-sm text-slate-400 hidden md:block">Background Theme</label>
       <select id="theme-selector" class="bg-slate-950 text-slate-100 px-3 py-2 rounded-lg border border-slate-700 text-sm focus:outline-none focus:border-blue-500">
         <option value="bg-slate-950" selected>Default Dark</option>
         <option value="bg-gray-900">Deep Gray</option>
@@ -55,7 +64,7 @@ import UrlModal from './UrlModal.astro';
   <!-- Split View -->
   <div class="flex-1 flex overflow-hidden">
     <!-- Left Pane - Editor -->
-    <div class="w-1/2 flex flex-col border-r border-slate-800">
+    <div id="editor-pane" class="w-full md:w-1/2 flex-col border-r border-slate-800 hidden">
       <textarea
         id="markdown-editor"
         class="flex-1 bg-slate-950 text-slate-100 p-6 font-mono text-sm resize-none focus:outline-none"
@@ -65,7 +74,7 @@ import UrlModal from './UrlModal.astro';
     </div>
 
     <!-- Right Pane - Preview -->
-    <div id="preview-pane" class="w-1/2 bg-slate-950 overflow-auto">
+    <div id="preview-pane" class="w-full md:w-1/2 bg-slate-950 overflow-auto hidden">
       <div class="max-w-4xl mx-auto px-6 py-12">
         <div id="markdown-preview" class="prose prose-invert max-w-full break-words"></div>
       </div>
@@ -90,11 +99,68 @@ import UrlModal from './UrlModal.astro';
   const generateUrlBtn = document.getElementById('generate-url-btn') as HTMLButtonElement | null;
   const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement | null;
   const previewPane = document.getElementById('preview-pane') as HTMLElement | null;
+  const editorPane = document.getElementById('editor-pane') as HTMLElement | null;
   const formatButtons = document.querySelectorAll('.format-btn');
   const urlModal = document.getElementById('url-modal') as HTMLElement | null;
   const generatedUrl = document.getElementById('generated-url') as HTMLInputElement | null;
+  const viewEditBtn = document.getElementById('view-edit-btn') as HTMLButtonElement | null;
+  const viewPreviewBtn = document.getElementById('view-preview-btn') as HTMLButtonElement | null;
 
   let currentGeneratedUrl = '';
+  let mediaQuery: MediaQueryList | null = null;
+
+  // Mobile view toggle logic
+  function setMobileView(view: 'edit' | 'preview') {
+    if (!editorPane || !previewPane || !viewEditBtn || !viewPreviewBtn) return;
+
+    if (view === 'edit') {
+      // Editor pane: show with flex
+      editorPane.classList.remove('hidden');
+      editorPane.classList.add('flex');
+      // Preview pane: hide
+      previewPane.classList.add('hidden');
+      previewPane.classList.remove('flex');
+      // Update button states
+      viewEditBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+      viewEditBtn.classList.add('bg-green-600', 'text-white');
+      viewPreviewBtn.classList.remove('bg-green-600', 'text-white');
+      viewPreviewBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+    } else {
+      // Editor pane: hide
+      editorPane.classList.add('hidden');
+      editorPane.classList.remove('flex');
+      // Preview pane: show with flex
+      previewPane.classList.remove('hidden');
+      previewPane.classList.add('flex');
+      // Update button states
+      viewPreviewBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+      viewPreviewBtn.classList.add('bg-green-600', 'text-white');
+      viewEditBtn.classList.remove('bg-green-600', 'text-white');
+      viewEditBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+      // Update preview when switching to preview view
+      updatePreview();
+    }
+  }
+
+  // Responsive view handling
+  function handleResponsiveView(e: MediaQueryListEvent | MediaQueryList) {
+    const isDesktop = e.matches;
+
+    if (isDesktop) {
+      // Desktop: show both panes side-by-side
+      if (editorPane) {
+        editorPane.classList.remove('hidden');
+        editorPane.classList.add('flex');
+      }
+      if (previewPane) {
+        previewPane.classList.remove('hidden');
+        previewPane.classList.add('flex');
+      }
+    } else {
+      // Mobile: default to edit mode (single pane)
+      setMobileView('edit');
+    }
+  }
 
   function debounce<T extends (...args: unknown[]) => void | Promise<void>>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: number | undefined;
@@ -318,6 +384,15 @@ import UrlModal from './UrlModal.astro';
     themeSelector.addEventListener('change', updatePreviewTheme);
   }
 
+  // Mobile view toggle event listeners
+  if (viewEditBtn) {
+    viewEditBtn.addEventListener('click', () => setMobileView('edit'));
+  }
+
+  if (viewPreviewBtn) {
+    viewPreviewBtn.addEventListener('click', () => setMobileView('preview'));
+  }
+
   if (generateUrlBtn) {
     generateUrlBtn.addEventListener('click', generateUrl);
   }
@@ -365,6 +440,12 @@ import UrlModal from './UrlModal.astro';
     if (themeSelector) {
       themeSelector.removeEventListener('change', updatePreviewTheme);
     }
+    if (viewEditBtn) {
+      viewEditBtn.removeEventListener('click', () => setMobileView('edit'));
+    }
+    if (viewPreviewBtn) {
+      viewPreviewBtn.removeEventListener('click', () => setMobileView('preview'));
+    }
     if (generateUrlBtn) {
       generateUrlBtn.removeEventListener('click', generateUrl);
     }
@@ -374,6 +455,9 @@ import UrlModal from './UrlModal.astro';
           closeModal();
         }
       });
+    }
+    if (mediaQuery) {
+      mediaQuery.removeEventListener('change', handleResponsiveView);
     }
     document.removeEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape' && urlModal && !urlModal.classList.contains('hidden')) {
@@ -388,5 +472,12 @@ import UrlModal from './UrlModal.astro';
   if (typeof window !== 'undefined') {
     updatePreviewTheme();
     restoreDraft();
+
+    // Set up responsive view listener
+    mediaQuery = window.matchMedia('(min-width: 768px)');
+    mediaQuery.addEventListener('change', handleResponsiveView);
+
+    // Initial view setup
+    handleResponsiveView(mediaQuery);
   }
 </script>
