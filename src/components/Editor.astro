@@ -90,8 +90,11 @@ import UrlModal from './UrlModal.astro';
 </div>
 
 <script>
-  import { compress } from '../utils/compression';
   import { parse } from '../utils/markdown';
+  import { debounce } from '../utils/debounce';
+  import { insertMarkdown } from '../utils/editor/markdown-formatter';
+  import { saveDraft, restoreDraft } from '../utils/editor/draft-persistence';
+  import { generateUrl, closeModal } from '../utils/editor/url-generator';
 
   const markdownEditor = document.getElementById('markdown-editor') as HTMLTextAreaElement | null;
   const markdownPreview = document.getElementById('markdown-preview') as HTMLElement | null;
@@ -106,7 +109,6 @@ import UrlModal from './UrlModal.astro';
   const viewEditBtn = document.getElementById('view-edit-btn') as HTMLButtonElement | null;
   const viewPreviewBtn = document.getElementById('view-preview-btn') as HTMLButtonElement | null;
 
-  let currentGeneratedUrl = '';
   let mediaQuery: MediaQueryList | null = null;
 
   // Mobile view toggle logic
@@ -162,18 +164,6 @@ import UrlModal from './UrlModal.astro';
     }
   }
 
-  function debounce<T extends (...args: unknown[]) => void | Promise<void>>(func: T, wait: number): (...args: Parameters<T>) => void {
-    let timeout: number | undefined;
-    return function executedFunction(this: unknown, ...args: Parameters<T>) {
-      const later = async () => {
-        clearTimeout(timeout);
-        await func.apply(this, args);
-      };
-      clearTimeout(timeout);
-      timeout = window.setTimeout(later, wait);
-    };
-  }
-
   async function updatePreview() {
     if (!markdownEditor || !markdownPreview || !charCount) return;
     const markdown = markdownEditor.value;
@@ -191,175 +181,10 @@ import UrlModal from './UrlModal.astro';
     }
   }
 
-  function saveDraft() {
-    if (typeof window !== 'undefined' && markdownEditor) {
-      localStorage.setItem('md2web_draft_text', markdownEditor.value);
-    }
-  }
-
-  function restoreDraft() {
-    if (typeof window !== 'undefined') {
-      const savedText = localStorage.getItem('md2web_draft_text');
-      const savedTheme = localStorage.getItem('md2web_draft_theme');
-
-      if (savedText && markdownEditor) {
-        markdownEditor.value = savedText;
-        updatePreview();
-      }
-
-      if (savedTheme && themeSelector) {
-        themeSelector.value = savedTheme;
-        updatePreviewTheme();
-      }
-    }
-  }
-
-  async function insertMarkdown(format: string) {
-    if (!markdownEditor) return;
-    const start = markdownEditor.selectionStart;
-    const end = markdownEditor.selectionEnd;
-    const selectedText = markdownEditor.value.substring(start, end);
-
-    let before = '';
-    let after = '';
-    let placeholder = '';
-    let cursorOffset = 0;
-
-    switch (format) {
-      case 'bold':
-        before = '**';
-        after = '**';
-        placeholder = 'bold text';
-        break;
-      case 'italic':
-        before = '*';
-        after = '*';
-        placeholder = 'italic text';
-        break;
-      case 'h1':
-        before = '# ';
-        after = '';
-        placeholder = 'Heading 1';
-        break;
-      case 'h2':
-        before = '## ';
-        after = '';
-        placeholder = 'Heading 2';
-        break;
-      case 'link':
-        before = '[';
-        after = '](url)';
-        placeholder = 'link text';
-        cursorOffset = -4; // Position cursor before "url)"
-        break;
-      case 'list':
-        before = '- ';
-        after = '';
-        placeholder = 'list item';
-        break;
-      case 'table':
-        before = '| Header 1 | Header 2 | Header 3 |\n|----------|----------|----------|\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |';
-        after = '';
-        placeholder = '';
-        cursorOffset = 0;
-        break;
-      case 'tasklist':
-        before = '- [ ] Task item\n- [ ] Another task';
-        after = '';
-        placeholder = '';
-        cursorOffset = 0;
-        break;
-      case 'blockquote':
-        before = '> ';
-        after = '';
-        placeholder = 'Quote text';
-        break;
-      case 'footnote':
-        before = '[^1]';
-        after = '';
-        placeholder = '';
-        // Add footnote definition at the end
-        const currentText = markdownEditor.value;
-        const footnoteDef = '\n\n[^1]: Footnote definition';
-        const newText = currentText.substring(0, start) + before + currentText.substring(end) + footnoteDef;
-        markdownEditor.value = newText;
-        const newCursorPos = start + before.length;
-        markdownEditor.setSelectionRange(newCursorPos, newCursorPos);
-        markdownEditor.focus();
-        // Trigger input event for live preview
-        markdownEditor.dispatchEvent(new Event('input', { bubbles: true }));
-        await updatePreview();
-        return;
-      case 'hr':
-        before = '---';
-        after = '';
-        placeholder = '';
-        break;
-    }
-
-    const newText = markdownEditor.value.substring(0, start) + before + (selectedText || placeholder) + after + markdownEditor.value.substring(end);
-    markdownEditor.value = newText;
-
-    let newCursorPos = start + before.length + (selectedText || placeholder).length + after.length + cursorOffset;
-    if (cursorOffset !== 0) {
-      newCursorPos = start + before.length + (selectedText || placeholder).length + cursorOffset;
-    }
-    markdownEditor.setSelectionRange(newCursorPos, newCursorPos);
-    markdownEditor.focus();
-
-    // Trigger input event for live preview
-    markdownEditor.dispatchEvent(new Event('input', { bubbles: true }));
-    await updatePreview();
-  }
-
   const debouncedUpdatePreview = debounce(updatePreview, 300);
-
-  function generateUrl() {
-    if (typeof window === 'undefined' || !markdownEditor || !themeSelector || !urlModal || !generatedUrl) return;
-
-    const markdown = markdownEditor.value;
-
-    if (!markdown.trim()) {
-      alert('Please enter some Markdown content first.');
-      return;
-    }
-
-    // Validate size (URL hash limit is ~32KB in most browsers)
-    const MAX_SIZE = 30000; // 30KB safe limit
-    if (markdown.length > MAX_SIZE) {
-      alert(`Content too large (${markdown.length} chars). Maximum is ${MAX_SIZE} characters.`);
-      return;
-    }
-
-    const theme = themeSelector.value;
-    const payload = JSON.stringify({ theme, markdown });
-
-    try {
-      const compressed = compress(payload);
-
-      let url;
-      if (window.location.origin === 'null' || window.location.origin.includes('file://')) {
-        url = window.location.href.split('#')[0] + '#' + compressed;
-      } else {
-        url = window.location.origin + window.location.pathname + '#' + compressed;
-      }
-
-      currentGeneratedUrl = url;
-      generatedUrl.value = url;
-      urlModal.classList.remove('hidden');
-    } catch (error) {
-      console.error('Compression error:', error);
-      alert('Failed to compress content. Please try again.');
-    }
-  }
-
-  function closeModal() {
-    if (urlModal) {
-      urlModal.classList.add('hidden');
-    }
-  }
-
-  const debouncedSaveDraft = debounce(saveDraft, 1000);
+  const debouncedSaveDraft = debounce(() => {
+    if (markdownEditor) saveDraft(markdownEditor);
+  }, 1000);
 
   if (markdownEditor) {
     markdownEditor.addEventListener('input', () => {
@@ -371,10 +196,10 @@ import UrlModal from './UrlModal.astro';
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 'b') {
           e.preventDefault();
-          insertMarkdown('bold');
+          insertMarkdown(markdownEditor, 'bold', updatePreview);
         } else if (e.key === 'i') {
           e.preventDefault();
-          insertMarkdown('italic');
+          insertMarkdown(markdownEditor, 'italic', updatePreview);
         }
       }
     });
@@ -394,27 +219,31 @@ import UrlModal from './UrlModal.astro';
   }
 
   if (generateUrlBtn) {
-    generateUrlBtn.addEventListener('click', generateUrl);
+    generateUrlBtn.addEventListener('click', () => {
+      if (markdownEditor && themeSelector && urlModal && generatedUrl) {
+        generateUrl(markdownEditor, themeSelector, urlModal, generatedUrl);
+      }
+    });
   }
 
   if (urlModal) {
     urlModal.addEventListener('click', (e: MouseEvent) => {
       if (e.target === urlModal) {
-        closeModal();
+        closeModal(urlModal);
       }
     });
   }
 
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape' && urlModal && !urlModal.classList.contains('hidden')) {
-      closeModal();
+      closeModal(urlModal);
     }
   });
 
   formatButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const format = btn.getAttribute('data-format');
-      if (format) insertMarkdown(format);
+      if (format && markdownEditor) insertMarkdown(markdownEditor, format, updatePreview);
     });
   });
 
@@ -429,10 +258,10 @@ import UrlModal from './UrlModal.astro';
         if (e.ctrlKey || e.metaKey) {
           if (e.key === 'b') {
             e.preventDefault();
-            insertMarkdown('bold');
+            insertMarkdown(markdownEditor, 'bold', updatePreview);
           } else if (e.key === 'i') {
             e.preventDefault();
-            insertMarkdown('italic');
+            insertMarkdown(markdownEditor, 'italic', updatePreview);
           }
         }
       });
@@ -447,12 +276,16 @@ import UrlModal from './UrlModal.astro';
       viewPreviewBtn.removeEventListener('click', () => setMobileView('preview'));
     }
     if (generateUrlBtn) {
-      generateUrlBtn.removeEventListener('click', generateUrl);
+      generateUrlBtn.removeEventListener('click', () => {
+        if (markdownEditor && themeSelector && urlModal && generatedUrl) {
+          generateUrl(markdownEditor, themeSelector, urlModal, generatedUrl);
+        }
+      });
     }
     if (urlModal) {
       urlModal.removeEventListener('click', (e: MouseEvent) => {
         if (e.target === urlModal) {
-          closeModal();
+          closeModal(urlModal);
         }
       });
     }
@@ -461,7 +294,7 @@ import UrlModal from './UrlModal.astro';
     }
     document.removeEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape' && urlModal && !urlModal.classList.contains('hidden')) {
-        closeModal();
+        closeModal(urlModal);
       }
     });
   }
@@ -471,7 +304,9 @@ import UrlModal from './UrlModal.astro';
   // Initialize
   if (typeof window !== 'undefined') {
     updatePreviewTheme();
-    restoreDraft();
+    if (markdownEditor) {
+      restoreDraft(markdownEditor, themeSelector, updatePreview, updatePreviewTheme);
+    }
 
     // Set up responsive view listener
     mediaQuery = window.matchMedia('(min-width: 768px)');
