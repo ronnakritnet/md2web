@@ -25,3 +25,15 @@
     display: table;
   }
 </style>
+
+<script>
+  import { setupInternalLinkHandler } from '../utils/scroll-navigation';
+
+  const previewEl = document.getElementById('markdown-preview');
+  const cleanupInternalLinks = setupInternalLinkHandler(previewEl);
+
+  // Cleanup on component unload
+  window.addEventListener('beforeunload', () => {
+    cleanupInternalLinks();
+  });
+</script>

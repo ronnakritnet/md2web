@@ -25,11 +25,14 @@ import Error from '../components/Error.astro';
 <script>
   import { decompress } from '../utils/compression';
   import { parse } from '../utils/markdown';
+  import { setupInternalLinkHandler } from '../utils/scroll-navigation';
 
   const editorMode = document.getElementById('editor-mode') as HTMLElement | null;
   const renderMode = document.getElementById('render-mode') as HTMLElement | null;
   const errorMode = document.getElementById('error-mode') as HTMLElement | null;
   const renderedContent = document.getElementById('rendered-content') as HTMLElement | null;
+
+  let cleanupInternalLinks: (() => void) | null = null;
 
   function showMode(mode: string) {
     if (!editorMode || !renderMode || !errorMode) return;
@@ -74,6 +77,16 @@ import Error from '../components/Error.astro';
         
         if (renderedContent) {
           renderedContent.innerHTML = await parse(payload.markdown);
+          
+          // Setup internal link handler after content is rendered
+          if (cleanupInternalLinks) {
+            cleanupInternalLinks();
+          }
+          
+          // Use requestAnimationFrame to ensure DOM is fully updated
+          requestAnimationFrame(() => {
+            cleanupInternalLinks = setupInternalLinkHandler(renderedContent);
+          });
         }
         
         showMode('render');
@@ -92,6 +105,13 @@ import Error from '../components/Error.astro';
     
     window.addEventListener('hashchange', () => {
       routeMode();
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (cleanupInternalLinks) {
+        cleanupInternalLinks();
+      }
     });
   }
 </script>
