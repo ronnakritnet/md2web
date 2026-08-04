@@ -1,8 +1,27 @@
 ---
 ---
 <!-- Right Pane - Preview -->
-<div id="preview-pane" class="w-full md:w-1/2 bg-slate-950 overflow-auto hidden">
-  <div class="max-w-4xl mx-auto px-6 py-12">
-    <div id="markdown-preview" class="prose prose-invert max-w-full break-words"></div>
+<div id="preview-pane" class="w-full md:w-1/2 h-full overflow-y-auto bg-slate-950 hidden">
+  <div class="w-full max-w-4xl mx-auto p-6 md:p-8">
+    <div id="markdown-preview" class="prose prose-invert max-w-none w-full break-words text-left"></div>
   </div>
 </div>
+
+<style>
+  #markdown-preview blockquote {
+    width: 100%;
+    display: block;
+  }
+  #markdown-preview hr {
+    width: 100%;
+    display: block;
+  }
+  #markdown-preview pre {
+    width: 100%;
+    display: block;
+  }
+  #markdown-preview table {
+    width: 100%;
+    display: table;
+  }
+</style>
