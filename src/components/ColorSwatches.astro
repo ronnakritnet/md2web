@@ -1,0 +1,154 @@
+---
+interface Props {
+  currentColor?: string;
+}
+
+const { currentColor = '#0f172a' } = Astro.props;
+---
+<div class="flex items-center gap-2">
+  <span class="text-sm text-slate-400 hidden md:block mr-2">Background</span>
+  
+  <!-- Preset Color Swatches -->
+<div class="flex gap-2">
+    <button 
+      data-color="#0f172a"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      style="background-color: #0f172a;"
+      aria-label="Dark Slate"
+      title="Dark Slate"
+    ></button>
+    <button 
+      data-color="#0b132b"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      style="background-color: #0b132b;"
+      aria-label="Deep Navy"
+      title="Deep Navy"
+    ></button>
+    <button 
+      data-color="#18181b"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      style="background-color: #18181b;"
+      aria-label="Charcoal Slate"
+      title="Charcoal Slate"
+    ></button>
+    <button 
+      data-color="#0a0d14"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      style="background-color: #0a0d14;"
+      aria-label="Pitch Black"
+      title="Pitch Black"
+    ></button>
+    <button 
+      data-color="#000000"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      style="background-color: #000000;"
+      aria-label="OLED Black"
+      title="OLED Black"
+    ></button>
+  </div>
+
+  <!-- Custom Color Picker -->
+  <div class="relative">
+    <input 
+      type="color" 
+      id="custom-color-picker"
+      class="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+      aria-label="Custom color picker"
+    />
+    <button 
+      id="custom-color-btn"
+      class="w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex items-center justify-center bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500"
+      aria-label="Custom color"
+      title="Custom Color"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .color-swatch[data-active="true"] {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  }
+  #custom-color-btn[data-active="true"] {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  }
+</style>
+
+<script>
+  const colorSwatches = document.querySelectorAll('.color-swatch');
+  const customColorPicker = document.getElementById('custom-color-picker') as HTMLInputElement | null;
+  const customColorBtn = document.getElementById('custom-color-btn') as HTMLElement | null;
+
+  const presetColors = ['#0a0d14', '#0f172a', '#18181b', '#0b132b', '#000000'];
+
+  function setActiveSwatch(color: string) {
+    const isPreset = presetColors.includes(color);
+    
+    // Clear all active states
+    colorSwatches.forEach(swatch => {
+      swatch.removeAttribute('data-active');
+    });
+    if (customColorBtn) {
+      customColorBtn.removeAttribute('data-active');
+    }
+
+    if (isPreset) {
+      // Activate the matching preset swatch
+      colorSwatches.forEach(swatch => {
+        const swatchColor = swatch.getAttribute('data-color');
+        if (swatchColor === color) {
+          swatch.setAttribute('data-active', 'true');
+        }
+      });
+      // Reset custom button to gradient
+      if (customColorBtn) {
+        customColorBtn.style.background = '';
+      }
+    } else {
+      // Activate the custom color button
+      if (customColorBtn) {
+        customColorBtn.setAttribute('data-active', 'true');
+        customColorBtn.style.background = color;
+      }
+    }
+  }
+
+  function dispatchColorChange(color: string) {
+    const event = new CustomEvent('colorchange', { detail: { color } });
+    document.dispatchEvent(event);
+  }
+
+  colorSwatches.forEach(swatch => {
+    swatch.addEventListener('click', () => {
+      const color = swatch.getAttribute('data-color');
+      if (color) {
+        setActiveSwatch(color);
+        dispatchColorChange(color);
+      }
+    });
+  });
+
+  if (customColorPicker && customColorBtn) {
+    customColorPicker.addEventListener('input', (e) => {
+      const color = (e.target as HTMLInputElement).value;
+      setActiveSwatch(color);
+      dispatchColorChange(color);
+    });
+  }
+
+  // Set initial active state
+  if (typeof window !== 'undefined') {
+    const savedColor = localStorage.getItem('md2web_draft_color');
+    if (savedColor) {
+      setActiveSwatch(savedColor);
+    } else {
+      setActiveSwatch('#0f172a');
+    }
+  }
+</script>

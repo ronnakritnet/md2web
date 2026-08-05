@@ -4,7 +4,7 @@ const MAX_SIZE = 30000; // 30KB safe limit for URL hash
 
 export function generateUrl(
   markdownEditor: HTMLTextAreaElement,
-  themeSelector: HTMLSelectElement,
+  themeColor: string,
   urlModal: HTMLElement,
   generatedUrl: HTMLInputElement
 ): void {
@@ -23,8 +23,7 @@ export function generateUrl(
     return;
   }
 
-  const theme = themeSelector.value;
-  const payload = JSON.stringify({ theme, markdown });
+  const payload = JSON.stringify({ theme: themeColor, markdown });
 
   try {
     const compressed = compress(payload);

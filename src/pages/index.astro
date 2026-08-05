@@ -72,7 +72,13 @@ import Error from '../components/Error.astro';
         }
         
         if (payload.theme && document.body) {
-          document.body.className = `${payload.theme} text-slate-100 min-h-screen`;
+          // Check if theme is a hex color (starts with #) or a Tailwind class
+          if (payload.theme.startsWith('#')) {
+            document.body.style.backgroundColor = payload.theme;
+            document.body.className = `text-slate-100 min-h-screen`;
+          } else {
+            document.body.className = `${payload.theme} text-slate-100 min-h-screen`;
+          }
         }
         
         if (renderedContent) {

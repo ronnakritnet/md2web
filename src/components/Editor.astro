@@ -36,7 +36,6 @@ import UrlModal from './UrlModal.astro';
   const markdownPreview = document.getElementById('markdown-preview') as HTMLElement | null;
   const charCount = document.getElementById('char-count') as HTMLElement | null;
   const generateUrlBtn = document.getElementById('generate-url-btn') as HTMLButtonElement | null;
-  const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement | null;
   const previewPane = document.getElementById('preview-pane') as HTMLElement | null;
   const editorPane = document.getElementById('editor-pane') as HTMLElement | null;
   const formatButtons = document.querySelectorAll('.format-btn');
@@ -46,6 +45,7 @@ import UrlModal from './UrlModal.astro';
   const viewPreviewBtn = document.getElementById('view-preview-btn') as HTMLButtonElement | null;
 
   let responsiveViewCleanup: (() => void) | null = null;
+  let currentColor = '#0f172a';
 
   async function updatePreview() {
     if (!markdownEditor || !markdownPreview || !charCount) return;
@@ -54,13 +54,21 @@ import UrlModal from './UrlModal.astro';
     markdownPreview.innerHTML = await parse(markdown);
   }
 
-  function updatePreviewTheme() {
-    if (!themeSelector || !previewPane) return;
-    const theme = themeSelector.value;
-    previewPane.classList.remove('bg-slate-950', 'bg-gray-900', 'bg-blue-950');
-    previewPane.classList.add(theme);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('md2web_draft_theme', theme);
+  function updatePreviewTheme(color?: string) {
+    if (!previewPane) return;
+    
+    let themeColor = color;
+    
+    // If no color provided, try to get from localStorage or use default
+    if (!themeColor && typeof window !== 'undefined') {
+      themeColor = localStorage.getItem('md2web_draft_color') || '#0f172a';
+    }
+    
+    if (themeColor) {
+      previewPane.style.backgroundColor = themeColor;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('md2web_draft_color', themeColor);
+      }
     }
   }
 
@@ -88,9 +96,14 @@ import UrlModal from './UrlModal.astro';
     });
   }
 
-  if (themeSelector) {
-    themeSelector.addEventListener('change', updatePreviewTheme);
-  }
+  // Listen for color changes from ColorSwatches component
+  document.addEventListener('colorchange', (e: Event) => {
+    const customEvent = e as CustomEvent<{ color: string }>;
+    if (customEvent.detail && customEvent.detail.color) {
+      currentColor = customEvent.detail.color;
+      updatePreviewTheme(currentColor);
+    }
+  });
 
   // Mobile view toggle event listeners
   if (viewEditBtn && viewPreviewBtn && editorPane && previewPane) {
@@ -108,8 +121,8 @@ import UrlModal from './UrlModal.astro';
 
   if (generateUrlBtn) {
     generateUrlBtn.addEventListener('click', () => {
-      if (markdownEditor && themeSelector && urlModal && generatedUrl) {
-        generateUrl(markdownEditor, themeSelector, urlModal, generatedUrl);
+      if (markdownEditor && urlModal && generatedUrl) {
+        generateUrl(markdownEditor, currentColor, urlModal, generatedUrl);
       }
     });
   }
@@ -154,9 +167,6 @@ import UrlModal from './UrlModal.astro';
         }
       });
     }
-    if (themeSelector) {
-      themeSelector.removeEventListener('change', updatePreviewTheme);
-    }
     if (viewEditBtn && viewPreviewBtn && editorPane && previewPane) {
       const responsiveElements = {
         editorPane,
@@ -170,8 +180,8 @@ import UrlModal from './UrlModal.astro';
     }
     if (generateUrlBtn) {
       generateUrlBtn.removeEventListener('click', () => {
-        if (markdownEditor && themeSelector && urlModal && generatedUrl) {
-          generateUrl(markdownEditor, themeSelector, urlModal, generatedUrl);
+        if (markdownEditor && urlModal && generatedUrl) {
+          generateUrl(markdownEditor, currentColor, urlModal, generatedUrl);
         }
       });
     }
@@ -204,7 +214,7 @@ import UrlModal from './UrlModal.astro';
   if (typeof window !== 'undefined') {
     updatePreviewTheme();
     if (markdownEditor) {
-      restoreDraft(markdownEditor, themeSelector, updatePreview, updatePreviewTheme);
+      restoreDraft(markdownEditor, updatePreview, updatePreviewTheme);
     }
 
     // Set up responsive view listener
