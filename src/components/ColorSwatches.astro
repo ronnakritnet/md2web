@@ -5,42 +5,41 @@ interface Props {
 
 const { currentColor = '#0f172a' } = Astro.props;
 ---
-<div class="flex items-center gap-2">
-  <span class="text-sm text-slate-400 hidden md:block mr-2">Background</span>
-  
+<div class="flex items-center gap-2 flex-shrink-0" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;">
+
   <!-- Preset Color Swatches -->
-<div class="flex gap-2">
-    <button 
+  <div class="flex gap-2 flex-shrink-0" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;">
+    <button
       data-color="#0f172a"
-      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex-shrink-0"
       style="background-color: #0f172a;"
       aria-label="Dark Slate"
       title="Dark Slate"
     ></button>
-    <button 
+    <button
       data-color="#0b132b"
-      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex-shrink-0"
       style="background-color: #0b132b;"
       aria-label="Deep Navy"
       title="Deep Navy"
     ></button>
-    <button 
+    <button
       data-color="#18181b"
-      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex-shrink-0"
       style="background-color: #18181b;"
       aria-label="Charcoal Slate"
       title="Charcoal Slate"
     ></button>
-    <button 
+    <button
       data-color="#0a0d14"
-      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex-shrink-0"
       style="background-color: #0a0d14;"
       aria-label="Pitch Black"
       title="Pitch Black"
     ></button>
-    <button 
+    <button
       data-color="#000000"
-      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none"
+      class="color-swatch w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex-shrink-0"
       style="background-color: #000000;"
       aria-label="OLED Black"
       title="OLED Black"
@@ -48,16 +47,16 @@ const { currentColor = '#0f172a' } = Astro.props;
   </div>
 
   <!-- Custom Color Picker -->
-  <div class="relative">
-    <input 
-      type="color" 
+  <div class="relative flex-shrink-0">
+    <input
+      type="color"
       id="custom-color-picker"
       class="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
       aria-label="Custom color picker"
     />
-    <button 
+    <button
       id="custom-color-btn"
-      class="w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex items-center justify-center bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500"
+      class="w-6 h-6 rounded-full border-2 border-slate-600 hover:border-slate-400 transition-all focus:outline-none flex items-center justify-center bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex-shrink-0"
       aria-label="Custom color"
       title="Custom Color"
     >

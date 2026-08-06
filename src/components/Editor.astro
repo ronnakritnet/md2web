@@ -1,5 +1,6 @@
 ---
 import Header from './Header.astro';
+import MobileModeBar from './MobileModeBar.astro';
 import Toolbar from './Toolbar.astro';
 import EditorPane from './EditorPane.astro';
 import PreviewPane from './PreviewPane.astro';
@@ -8,7 +9,9 @@ import UrlModal from './UrlModal.astro';
 <div id="editor-mode" class="h-screen flex flex-col">
   <Header />
 
-  <Toolbar />
+  <MobileModeBar />
+
+  <Toolbar id="toolbar" class="w-full" />
 
   <!-- Split View -->
   <div class="flex-1 flex overflow-hidden">
@@ -38,11 +41,12 @@ import UrlModal from './UrlModal.astro';
   const generateUrlBtn = document.getElementById('generate-url-btn') as HTMLButtonElement | null;
   const previewPane = document.getElementById('preview-pane') as HTMLElement | null;
   const editorPane = document.getElementById('editor-pane') as HTMLElement | null;
+  const toolbar = document.getElementById('toolbar') as HTMLElement | null;
   const formatButtons = document.querySelectorAll('.format-btn');
   const urlModal = document.getElementById('url-modal') as HTMLElement | null;
   const generatedUrl = document.getElementById('generated-url') as HTMLInputElement | null;
-  const viewEditBtn = document.getElementById('view-edit-btn') as HTMLButtonElement | null;
-  const viewPreviewBtn = document.getElementById('view-preview-btn') as HTMLButtonElement | null;
+  const mobileEditBtn = document.getElementById('mobile-edit-btn') as HTMLButtonElement | null;
+  const mobilePreviewBtn = document.getElementById('mobile-preview-btn') as HTMLButtonElement | null;
 
   let responsiveViewCleanup: (() => void) | null = null;
   let currentColor = '#0f172a';
@@ -106,17 +110,30 @@ import UrlModal from './UrlModal.astro';
   });
 
   // Mobile view toggle event listeners
-  if (viewEditBtn && viewPreviewBtn && editorPane && previewPane) {
+  if (mobileEditBtn && mobilePreviewBtn && editorPane && previewPane && toolbar) {
     const responsiveElements = {
       editorPane,
       previewPane,
-      viewEditBtn,
-      viewPreviewBtn
+      viewEditBtn: mobileEditBtn,
+      viewPreviewBtn: mobilePreviewBtn,
+      toolbar
     };
     const responsiveOptions = { updatePreview };
 
-    viewEditBtn.addEventListener('click', () => setMobileView(responsiveElements, 'edit', responsiveOptions));
-    viewPreviewBtn.addEventListener('click', () => setMobileView(responsiveElements, 'preview', responsiveOptions));
+    mobileEditBtn.addEventListener('click', () => {
+      try {
+        setMobileView(responsiveElements, 'edit', responsiveOptions);
+      } catch (error) {
+        console.error('Error switching to edit mode:', error);
+      }
+    });
+    mobilePreviewBtn.addEventListener('click', () => {
+      try {
+        setMobileView(responsiveElements, 'preview', responsiveOptions);
+      } catch (error) {
+        console.error('Error switching to preview mode:', error);
+      }
+    });
   }
 
   if (generateUrlBtn) {
@@ -167,16 +184,17 @@ import UrlModal from './UrlModal.astro';
         }
       });
     }
-    if (viewEditBtn && viewPreviewBtn && editorPane && previewPane) {
+    if (mobileEditBtn && mobilePreviewBtn && editorPane && previewPane && toolbar) {
       const responsiveElements = {
         editorPane,
         previewPane,
-        viewEditBtn,
-        viewPreviewBtn
+        viewEditBtn: mobileEditBtn,
+        viewPreviewBtn: mobilePreviewBtn,
+        toolbar
       };
       const responsiveOptions = { updatePreview };
-      viewEditBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'edit', responsiveOptions));
-      viewPreviewBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'preview', responsiveOptions));
+      mobileEditBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'edit', responsiveOptions));
+      mobilePreviewBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'preview', responsiveOptions));
     }
     if (generateUrlBtn) {
       generateUrlBtn.removeEventListener('click', () => {
@@ -218,15 +236,20 @@ import UrlModal from './UrlModal.astro';
     }
 
     // Set up responsive view listener
-    if (editorPane && previewPane && viewEditBtn && viewPreviewBtn) {
+    if (editorPane && previewPane && mobileEditBtn && mobilePreviewBtn && toolbar) {
       const responsiveElements = {
         editorPane,
         previewPane,
-        viewEditBtn,
-        viewPreviewBtn
+        viewEditBtn: mobileEditBtn,
+        viewPreviewBtn: mobilePreviewBtn,
+        toolbar
       };
       const responsiveOptions = { updatePreview };
-      responsiveViewCleanup = setupResponsiveView(responsiveElements, responsiveOptions);
+      try {
+        responsiveViewCleanup = setupResponsiveView(responsiveElements, responsiveOptions);
+      } catch (error) {
+        console.error('Error setting up responsive view:', error);
+      }
     }
   }
 </script>

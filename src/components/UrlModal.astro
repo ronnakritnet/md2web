@@ -47,7 +47,7 @@ const { url, isOpen } = Astro.props;
 
 <script>
   const urlModal = document.getElementById('url-modal');
-  const generatedUrl = document.getElementById('generated-url') as HTMLInputElement;
+  const generatedUrl = document.getElementById('generated-url') as HTMLInputElement | null;
   const copyUrlBtn = document.getElementById('copy-url-btn');
   const openUrlBtn = document.getElementById('open-url-btn');
   const closeModalBtn = document.getElementById('close-modal-btn');
@@ -70,7 +70,6 @@ const { url, isOpen } = Astro.props;
       }
     } catch (error) {
       console.error('Copy failed:', error);
-      alert('Failed to copy URL. Please copy it manually.');
     }
   }
 
