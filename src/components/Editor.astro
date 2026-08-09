@@ -41,7 +41,8 @@ import UrlModal from './UrlModal.astro';
   const generateUrlBtn = document.getElementById('generate-url-btn') as HTMLButtonElement | null;
   const previewPane = document.getElementById('preview-pane') as HTMLElement | null;
   const editorPane = document.getElementById('editor-pane') as HTMLElement | null;
-  const toolbar = document.getElementById('toolbar') as HTMLElement | null;
+  const formattingTools = document.getElementById('formatting-tools') as HTMLElement | null;
+  const colorSwatchesContainer = document.getElementById('color-swatches-container') as HTMLElement | null;
   const formatButtons = document.querySelectorAll('.format-btn');
   const urlModal = document.getElementById('url-modal') as HTMLElement | null;
   const generatedUrl = document.getElementById('generated-url') as HTMLInputElement | null;
@@ -110,13 +111,14 @@ import UrlModal from './UrlModal.astro';
   });
 
   // Mobile view toggle event listeners
-  if (mobileEditBtn && mobilePreviewBtn && editorPane && previewPane && toolbar) {
+  if (mobileEditBtn && mobilePreviewBtn && editorPane && previewPane && formattingTools && colorSwatchesContainer) {
     const responsiveElements = {
       editorPane,
       previewPane,
       viewEditBtn: mobileEditBtn,
       viewPreviewBtn: mobilePreviewBtn,
-      toolbar
+      formattingTools,
+      colorSwatchesContainer
     };
     const responsiveOptions = { updatePreview };
 
@@ -184,13 +186,14 @@ import UrlModal from './UrlModal.astro';
         }
       });
     }
-    if (mobileEditBtn && mobilePreviewBtn && editorPane && previewPane && toolbar) {
+    if (mobileEditBtn && mobilePreviewBtn && editorPane && previewPane && formattingTools && colorSwatchesContainer) {
       const responsiveElements = {
         editorPane,
         previewPane,
         viewEditBtn: mobileEditBtn,
         viewPreviewBtn: mobilePreviewBtn,
-        toolbar
+        formattingTools,
+        colorSwatchesContainer
       };
       const responsiveOptions = { updatePreview };
       mobileEditBtn.removeEventListener('click', () => setMobileView(responsiveElements, 'edit', responsiveOptions));
@@ -236,13 +239,14 @@ import UrlModal from './UrlModal.astro';
     }
 
     // Set up responsive view listener
-    if (editorPane && previewPane && mobileEditBtn && mobilePreviewBtn && toolbar) {
+    if (editorPane && previewPane && formattingTools && colorSwatchesContainer && mobileEditBtn && mobilePreviewBtn) {
       const responsiveElements = {
         editorPane,
         previewPane,
         viewEditBtn: mobileEditBtn,
         viewPreviewBtn: mobilePreviewBtn,
-        toolbar
+        formattingTools,
+        colorSwatchesContainer
       };
       const responsiveOptions = { updatePreview };
       try {
