@@ -9,7 +9,26 @@ interface Props {
 const { id, class: className } = Astro.props;
 ---
 <!-- Full-Width Formatting Toolbar -->
-<div id={id} class={`bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between gap-4 w-full ${className || ''}`} style="display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; flex-wrap: nowrap !important;">
+<div id={id} class={`bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center gap-2 w-full ${className || ''}`} style="display: flex !important; flex-direction: row !important; align-items: center !important;">
+  <!-- Mobile Edit/Preview Toggle -->
+  <div class="flex items-center gap-1 max-w-[240px] p-0.5 bg-gray-900/60 border border-gray-700/60 rounded-lg md:hidden flex-shrink-0">
+    <button
+      id="mobile-edit-btn"
+      class="w-1/2 flex items-center justify-center gap-1.5 py-1.5 px-3 text-xs font-semibold rounded-md bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 shadow-sm pointer-events-none"
+      aria-label="Edit mode"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+      <span>Edit</span>
+    </button>
+    <button
+      id="mobile-preview-btn"
+      class="w-1/2 flex items-center justify-center gap-1.5 py-1.5 px-3 text-xs font-medium rounded-md text-gray-400 hover:text-gray-200 bg-transparent border-transparent"
+      aria-label="Preview mode"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span>Preview</span>
+    </button>
+  </div>
   <!-- Left Group: Formatting Buttons -->
   <div id="formatting-tools" class="flex items-center gap-1 flex-nowrap overflow-x-auto min-w-0 flex-1">
     <button data-format="bold" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white p-1.5 rounded transition-colors flex-shrink-0" title="Bold (Ctrl+B)" aria-label="Bold text">

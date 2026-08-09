@@ -35,11 +35,11 @@ export function setMobileView(
     formattingTools.classList.remove('hidden');
     // Hide color swatches in edit mode
     colorSwatchesContainer.classList.add('hidden');
-    // Update button states
-    viewEditBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-    viewEditBtn.classList.add('bg-green-600', 'text-white');
-    viewPreviewBtn.classList.remove('bg-green-600', 'text-white');
-    viewPreviewBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+    // Update button states for segmented control
+    viewEditBtn.classList.remove('bg-transparent', 'text-gray-400', 'hover:text-gray-200', 'border-transparent');
+    viewEditBtn.classList.add('bg-emerald-950/60', 'text-emerald-400', 'border', 'border-emerald-500/30', 'shadow-sm', 'pointer-events-none');
+    viewPreviewBtn.classList.remove('bg-emerald-950/60', 'text-emerald-400', 'border', 'border-emerald-500/30', 'shadow-sm', 'pointer-events-none');
+    viewPreviewBtn.classList.add('bg-transparent', 'text-gray-400', 'hover:text-gray-200', 'border-transparent');
   } else {
     // Editor pane: hide
     editorPane.classList.add('hidden');
@@ -51,11 +51,11 @@ export function setMobileView(
     formattingTools.classList.add('hidden');
     // Show color swatches in preview mode for theme testing
     colorSwatchesContainer.classList.remove('hidden');
-    // Update button states
-    viewPreviewBtn.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
-    viewPreviewBtn.classList.add('bg-green-600', 'text-white');
-    viewEditBtn.classList.remove('bg-green-600', 'text-white');
-    viewEditBtn.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-600');
+    // Update button states for segmented control
+    viewPreviewBtn.classList.remove('bg-transparent', 'text-gray-400', 'hover:text-gray-200', 'border-transparent');
+    viewPreviewBtn.classList.add('bg-emerald-950/60', 'text-emerald-400', 'border', 'border-emerald-500/30', 'shadow-sm', 'pointer-events-none');
+    viewEditBtn.classList.remove('bg-emerald-950/60', 'text-emerald-400', 'border', 'border-emerald-500/30', 'shadow-sm', 'pointer-events-none');
+    viewEditBtn.classList.add('bg-transparent', 'text-gray-400', 'hover:text-gray-200', 'border-transparent');
     // Update preview when switching to preview view
     updatePreview();
   }
