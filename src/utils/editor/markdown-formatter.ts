@@ -51,7 +51,7 @@ export async function insertMarkdown(
       cursorOffset = 0;
       break;
     case 'tasklist':
-      before = '- [ ] Task item\n- [ ] Another task';
+      before = '- [ ] Task item\n- [x] Another task';
       after = '';
       placeholder = '';
       cursorOffset = 0;

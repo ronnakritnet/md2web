@@ -63,7 +63,7 @@
 
 /* Blockquotes */
 .prose blockquote {
-  border-left: 4px solid rgb(14 165 233);
+  border-left: 4px solid rgb(16 185 129);
   background-color: rgb(23 23 23 / 0.5);
   padding-left: 1rem;
   padding-top: 0.5rem;
@@ -76,12 +76,13 @@
 
 /* Footnotes */
 .prose sup.footnote-ref a {
-  color: rgb(56 189 248);
+  color: rgb(52 211 153);
   text-decoration: none;
 }
 
 .prose sup.footnote-ref a:hover {
-  color: rgb(125 211 252);
+  color: rgb(110 231 183);
+  text-decoration: underline;
 }
 
 .prose .footnotes {
@@ -107,11 +108,12 @@
 }
 
 .prose .footnotes li a {
-  color: rgb(56 189 248);
+  color: rgb(52 211 153);
   text-decoration: none;
   margin-left: 0.5rem;
 }
 
 .prose .footnotes li a:hover {
-  color: rgb(125 211 252);
+  color: rgb(110 231 183);
+  text-decoration: underline;
 }
