@@ -9,9 +9,9 @@ interface Props {
 const { id, class: className } = Astro.props;
 ---
 <!-- Full-Width Formatting Toolbar -->
-<div id={id} class={`bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center gap-2 w-full ${className || ''}`} style="display: flex !important; flex-direction: row !important; align-items: center !important;">
+<div id={id} class={`bg-gray-800 border-b border-gray-700 px-2 sm:px-4 py-2 flex flex-wrap sm:flex-row items-center gap-2 w-full ${className || ''}`} style="display: flex !important; align-items: center !important;">
   <!-- Mobile Edit/Preview Toggle -->
-  <div class="flex items-center gap-1 max-w-[240px] p-0.5 bg-gray-900/60 border border-gray-700/60 rounded-lg md:hidden flex-shrink-0">
+  <div class="flex items-center gap-1 w-full sm:w-auto sm:max-w-[240px] p-0.5 bg-gray-900/60 border border-gray-700/60 rounded-lg md:hidden flex-shrink-0">
     <button
       id="mobile-edit-btn"
       class="w-1/2 flex items-center justify-center gap-1.5 py-1.5 px-3 text-xs font-semibold rounded-md bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 shadow-sm pointer-events-none"
@@ -30,7 +30,7 @@ const { id, class: className } = Astro.props;
     </button>
   </div>
   <!-- Left Group: Formatting Buttons -->
-  <div id="formatting-tools" class="flex items-center gap-1 flex-nowrap overflow-x-auto min-w-0 flex-1">
+  <div id="formatting-tools" class="flex items-center gap-1 flex-wrap sm:flex-nowrap overflow-x-auto sm:overflow-visible min-w-0 flex-1 w-full sm:w-auto">
     <button data-format="bold" class="format-btn bg-slate-700 hover:bg-slate-600 text-slate-200 hover:text-white p-1.5 rounded transition-colors flex-shrink-0" title="Bold (Ctrl+B)" aria-label="Bold text">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
     </button>
@@ -66,7 +66,7 @@ const { id, class: className } = Astro.props;
     </button>
   </div>
   <!-- Right Group: Color Swatches -->
-  <div id="color-swatches-container" class="flex items-center flex-shrink-0 ml-auto whitespace-nowrap">
+  <div id="color-swatches-container" class="flex items-center flex-shrink-0 w-full sm:w-auto sm:ml-auto whitespace-nowrap">
     <ColorSwatches currentColor="#0f172a" />
   </div>
 </div>
