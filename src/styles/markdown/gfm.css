@@ -4,32 +4,36 @@
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  border-color: rgb(38 38 38);
+  border: 1px solid rgb(75 85 99);
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
 .prose thead {
-  background-color: rgb(23 23 23);
-  border-bottom: 1px solid rgb(38 38 38);
+  background-color: rgb(31 41 55);
+  border-bottom: 1px solid rgb(75 85 99);
 }
 
 .prose th {
-  border: 1px solid rgb(38 38 38);
+  border: 1px solid rgb(75 85 99);
   padding: 0.5rem 1rem;
   font-weight: 600;
   text-align: left;
-  color: rgb(226 232 240);
+  color: rgb(243 244 246);
 }
 
 .prose td {
-  border: 1px solid rgb(38 38 38);
+  border: 1px solid rgb(75 85 99);
   padding: 0.5rem 1rem;
-  color: rgb(203 213 225);
+  color: rgb(229 231 235);
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: rgb(31 41 55 / 0.3);
 }
 
 .prose tbody tr:hover {
-  background-color: rgb(38 38 38 / 0.5);
+  background-color: rgb(31 41 55 / 0.5);
   transition: background-color 0.2s;
 }
 
