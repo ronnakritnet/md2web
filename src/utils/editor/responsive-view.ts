@@ -33,8 +33,9 @@ export function setMobileView(
     previewPane.classList.remove('flex');
     // Show formatting tools in edit mode
     formattingTools.classList.remove('hidden');
-    // Hide color swatches in edit mode
+    // Hide color swatches in edit mode on mobile
     colorSwatchesContainer.classList.add('hidden');
+    colorSwatchesContainer.classList.remove('flex');
     // Update button states for tab style
     viewEditBtn.classList.remove('text-gray-400', 'border-transparent');
     viewEditBtn.classList.add('text-emerald-400', 'border-emerald-400');
@@ -49,8 +50,9 @@ export function setMobileView(
     previewPane.classList.add('flex');
     // Hide formatting tools in preview mode
     formattingTools.classList.add('hidden');
-    // Show color swatches in preview mode for theme testing
+    // Show color swatches in preview mode on mobile
     colorSwatchesContainer.classList.remove('hidden');
+    colorSwatchesContainer.classList.add('flex');
     // Update button states for tab style
     viewPreviewBtn.classList.remove('text-gray-400', 'border-transparent');
     viewPreviewBtn.classList.add('text-emerald-400', 'border-emerald-400');
@@ -83,6 +85,7 @@ export function handleResponsiveView(
     // Show both formatting tools and color swatches on desktop
     formattingTools.classList.remove('hidden');
     colorSwatchesContainer.classList.remove('hidden');
+    colorSwatchesContainer.classList.add('flex');
   } else {
     // Mobile: default to edit mode (single pane)
     setMobileView(elements, 'edit', options);

@@ -61,13 +61,23 @@ export async function insertMarkdown(
       after = '';
       placeholder = 'Quote text';
       break;
-    case 'footnote':
-      before = '[^1]';
+    case 'footnote': {
+      const currentText = markdownEditor.value;
+      const existingFootnotes = currentText.match(/\[\^(\d+)\]/g);
+      let nextNumber = 1;
+      if (existingFootnotes && existingFootnotes.length > 0) {
+        const numbers = existingFootnotes.map(fn => {
+          const match = fn.match(/\[\^(\d+)\]/);
+          return match ? parseInt(match[1], 10) : 0;
+        });
+        nextNumber = Math.max(...numbers) + 1;
+      }
+
+      before = `[^${nextNumber}]`;
       after = '';
       placeholder = '';
       // Add footnote definition at the end
-      const currentText = markdownEditor.value;
-      const footnoteDef = '\n\n[^1]: Footnote definition';
+      const footnoteDef = `\n\n[^${nextNumber}]: Footnote definition`;
       const newText = currentText.substring(0, start) + before + currentText.substring(end) + footnoteDef;
       markdownEditor.value = newText;
       const newCursorPos = start + before.length;
@@ -77,6 +87,7 @@ export async function insertMarkdown(
       markdownEditor.dispatchEvent(new Event('input', { bubbles: true }));
       await updatePreview();
       return;
+    }
     case 'hr':
       before = '---';
       after = '';

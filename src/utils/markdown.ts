@@ -1,6 +1,23 @@
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { createCustomRenderer } from './markdown/custom-renderer';
 import { footnotesExtension } from './markdown/footnotes-extension';
+
+function sanitizeHtml(html: string): string {
+  if (typeof window === 'undefined') return html;
+  try {
+    const purify = typeof DOMPurify === 'function' ? DOMPurify(window) : DOMPurify;
+    if (purify && typeof purify.sanitize === 'function') {
+      return purify.sanitize(html, {
+        ADD_TAGS: ['input'],
+        ADD_ATTR: ['target', 'id', 'class', 'checked', 'disabled', 'type', 'aria-label'],
+      });
+    }
+  } catch (error) {
+    console.error('HTML sanitization error:', error);
+  }
+  return html;
+}
 
 export function createMarkdownParser() {
   // Configure marked with custom renderer and extensions
@@ -31,7 +48,8 @@ export function createMarkdownParser() {
           html = footnotes.postprocess(html);
         }
 
-        return html;
+        // Sanitize generated HTML to prevent XSS attacks while preserving markdown elements
+        return sanitizeHtml(html);
       } catch (error) {
         console.error('Markdown parsing error:', error);
         // Return the raw markdown as fallback

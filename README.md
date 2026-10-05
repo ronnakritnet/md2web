@@ -35,7 +35,8 @@
 | [Astro](https://astro.build) | Modern static site generator and framework |
 | [TypeScript](https://www.typescriptlang.org) | Type-safe JavaScript development |
 | [Tailwind CSS](https://tailwindcss.com) | Utility-first CSS framework for styling |
-| [Markdown-it](https://github.com/markdown-it/markdown-it) | Markdown parser and renderer |
+| [Marked](https://github.com/markedjs/marked) | High-speed Markdown parser and compiler |
+| [DOMPurify](https://github.com/cure53/DOMPurify) | DOM-only, super-fast, ultra-tolerant XSS sanitizer |
 
 ---
 

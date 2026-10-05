@@ -5,7 +5,7 @@ interface Props {
 
 const { currentColor = '#0f172a' } = Astro.props;
 ---
-<div class="flex items-center gap-2 flex-shrink-0" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;">
+<div class="flex items-center gap-2 flex-shrink-0" data-default-color={currentColor} style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;">
 
   <!-- Preset Color Swatches -->
   <div class="flex gap-2 flex-shrink-0" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important;">
@@ -143,11 +143,13 @@ const { currentColor = '#0f172a' } = Astro.props;
 
   // Set initial active state
   if (typeof window !== 'undefined') {
+    const swatchesContainer = document.querySelector('[data-default-color]');
+    const fallbackColor = swatchesContainer?.getAttribute('data-default-color') || '#0f172a';
     const savedColor = localStorage.getItem('md2web_draft_color');
     if (savedColor) {
       setActiveSwatch(savedColor);
     } else {
-      setActiveSwatch('#0f172a');
+      setActiveSwatch(fallbackColor);
     }
   }
 </script>
