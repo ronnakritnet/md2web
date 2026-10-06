@@ -9,8 +9,33 @@ function sanitizeHtml(html: string): string {
     const purify = typeof DOMPurify === 'function' ? DOMPurify(window) : DOMPurify;
     if (purify && typeof purify.sanitize === 'function') {
       return purify.sanitize(html, {
-        ADD_TAGS: ['input'],
-        ADD_ATTR: ['target', 'id', 'class', 'checked', 'disabled', 'type', 'aria-label'],
+        USE_PROFILES: { html: true, svg: true },
+        ADD_TAGS: ['input', 'button', 'svg', 'path', 'rect'],
+        ADD_ATTR: [
+          'target',
+          'id',
+          'class',
+          'checked',
+          'disabled',
+          'type',
+          'aria-label',
+          'data-code',
+          'xmlns',
+          'viewBox',
+          'fill',
+          'stroke',
+          'stroke-width',
+          'stroke-linecap',
+          'stroke-linejoin',
+          'd',
+          'rx',
+          'ry',
+          'x',
+          'y',
+          'width',
+          'height',
+          'title',
+        ],
       });
     }
   } catch (error) {

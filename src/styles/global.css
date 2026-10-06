@@ -1,4 +1,5 @@
 @import './markdown/gfm.css';
+@import 'highlight.js/styles/github-dark.css';
 
 @tailwind base;
 @tailwind components;

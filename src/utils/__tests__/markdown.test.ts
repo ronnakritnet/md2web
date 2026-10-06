@@ -57,6 +57,40 @@ describe('markdown parser and sanitizer', () => {
     expect(html).toContain('Pending task');
   });
 
+  describe('Syntax Highlighting and Code Blocks', () => {
+    it('should render code blocks with syntax highlighting and language badge', async () => {
+      const md = '```javascript\nconst greeting = "Hello, world!";\n```';
+      const html = await parse(md);
+
+      expect(html).toContain('code-block-container');
+      expect(html).toContain('code-lang uppercase');
+      expect(html).toContain('javascript</span>');
+      expect(html).toContain('hljs');
+      expect(html).toContain('language-javascript');
+      expect(html).toContain('copy-code-btn');
+      expect(html).toContain('data-code');
+    });
+
+    it('should auto-detect syntax when language is not specified', async () => {
+      const md = '```\nfunction add(a, b) {\n  return a + b;\n}\n```';
+      const html = await parse(md);
+
+      expect(html).toContain('code-block-container');
+      expect(html).toContain('hljs');
+      expect(html).toContain('copy-code-btn');
+    });
+
+    it('should preserve copy button and data-code attribute through sanitization', async () => {
+      const md = '```python\nprint("test")\n```';
+      const html = await parse(md);
+
+      expect(html).toContain('<button');
+      expect(html).toContain('copy-code-btn');
+      expect(html).toContain('data-code=');
+      expect(html).toContain('<svg');
+    });
+  });
+
   describe('XSS Protection (DOMPurify Sanitization)', () => {
     it('should strip script tags from rendered HTML', async () => {
       const maliciousMd = 'Normal text\n\n<script>alert("XSS")</script>\n\nMore text';

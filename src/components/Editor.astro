@@ -37,6 +37,7 @@ import UrlModal from './UrlModal.astro';
   import { parse } from '../utils/markdown';
   import { debounce } from '../utils/debounce';
   import { insertMarkdown } from '../utils/editor/markdown-formatter';
+  import { handleEditorKeyDown } from '../utils/editor/keyboard-shortcuts';
   import { saveDraft, restoreDraft } from '../utils/editor/draft-persistence';
   import { generateUrl } from '../utils/editor/url-generator';
   import { setMobileView, setupResponsiveView } from '../utils/editor/responsive-view';
@@ -95,15 +96,7 @@ import UrlModal from './UrlModal.astro';
     });
 
     markdownEditor.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'b') {
-          e.preventDefault();
-          insertMarkdown(markdownEditor, 'bold', updatePreview);
-        } else if (e.key === 'i') {
-          e.preventDefault();
-          insertMarkdown(markdownEditor, 'italic', updatePreview);
-        }
-      }
+      handleEditorKeyDown(e, markdownEditor, updatePreview);
     });
   }
 
