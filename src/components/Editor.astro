@@ -75,6 +75,7 @@ import UrlModal from './UrlModal.astro';
     }
     
     if (themeColor) {
+      currentColor = themeColor;
       previewPane.style.backgroundColor = themeColor;
       if (typeof window !== 'undefined') {
         localStorage.setItem('md2web_draft_color', themeColor);

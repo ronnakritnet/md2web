@@ -17,12 +17,6 @@ export function generateUrl(
     return;
   }
 
-  // Validate size (URL hash limit is ~32KB in most browsers)
-  if (markdown.length > MAX_SIZE) {
-    alert(`Content too large (${markdown.length} chars). Maximum is ${MAX_SIZE} characters.`);
-    return;
-  }
-
   const payload = JSON.stringify({ theme: themeColor, markdown });
 
   try {
@@ -33,6 +27,12 @@ export function generateUrl(
       url = window.location.href.split('#')[0] + '#' + compressed;
     } else {
       url = window.location.origin + window.location.pathname + '#' + compressed;
+    }
+
+    // Validate size (URL hash limit is ~32KB across major browsers)
+    if (url.length > MAX_SIZE) {
+      alert(`Compressed URL is too large (${url.length} chars). Maximum safe length is ${MAX_SIZE} characters. Please reduce document length or embedded data.`);
+      return;
     }
 
     generatedUrl.value = url;

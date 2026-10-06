@@ -43,10 +43,20 @@ import Error from '../components/Error.astro';
     
     if (mode === 'editor') {
       editorMode.classList.remove('hidden');
+      if (document.body) {
+        document.body.style.backgroundColor = '';
+        document.body.className = 'text-slate-100 min-h-screen';
+      }
+      document.title = 'md2web - Instant Markdown to Web Page';
     } else if (mode === 'render') {
       renderMode.classList.remove('hidden');
     } else if (mode === 'error') {
       errorMode.classList.remove('hidden');
+      if (document.body) {
+        document.body.style.backgroundColor = '';
+        document.body.className = 'text-slate-100 min-h-screen';
+      }
+      document.title = 'Error - md2web';
     }
   }
 
@@ -83,6 +93,15 @@ import Error from '../components/Error.astro';
         
         if (renderedContent) {
           renderedContent.innerHTML = await parse(payload.markdown);
+
+          // Update page title from first heading
+          const titleMatch = payload.markdown.match(/^#\s+(.+)$/m);
+          if (titleMatch && titleMatch[1]) {
+            const cleanTitle = titleMatch[1].trim().replace(/[#*`_~]/g, '');
+            document.title = `${cleanTitle} - md2web`;
+          } else {
+            document.title = 'md2web - Instant Markdown to Web Page';
+          }
           
           // Setup internal link handler after content is rendered
           if (cleanupInternalLinks) {

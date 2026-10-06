@@ -29,4 +29,19 @@ describe('markdown formatter utility', () => {
     expect(textarea.value).toContain('[^3]');
     expect(textarea.value).toContain('[^3]: Footnote definition');
   });
+
+  it('should insert link format and select the url placeholder', async () => {
+    const textarea = document.createElement('textarea');
+    textarea.value = 'Visit Google today';
+    textarea.selectionStart = 6;
+    textarea.selectionEnd = 12; // "Google"
+
+    const updatePreviewMock = vi.fn().mockResolvedValue(undefined);
+    await insertMarkdown(textarea, 'link', updatePreviewMock);
+
+    expect(textarea.value).toBe('Visit [Google](url) today');
+    // "url" starts at index 15 and ends at index 18
+    expect(textarea.selectionStart).toBe(15);
+    expect(textarea.selectionEnd).toBe(18);
+  });
 });

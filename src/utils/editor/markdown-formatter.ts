@@ -98,11 +98,16 @@ export async function insertMarkdown(
   const newText = markdownEditor.value.substring(0, start) + before + (selectedText || placeholder) + after + markdownEditor.value.substring(end);
   markdownEditor.value = newText;
 
-  let newCursorPos = start + before.length + (selectedText || placeholder).length + after.length + cursorOffset;
-  if (cursorOffset !== 0) {
-    newCursorPos = start + before.length + (selectedText || placeholder).length + cursorOffset;
+  let selectStart = start + before.length + (selectedText || placeholder).length + after.length + cursorOffset;
+  let selectEnd = selectStart;
+
+  if (format === 'link') {
+    // Select the "url" placeholder so the user can immediately paste or type their URL
+    selectStart = start + before.length + (selectedText || placeholder).length + 2;
+    selectEnd = selectStart + 3; // length of "url"
   }
-  markdownEditor.setSelectionRange(newCursorPos, newCursorPos);
+
+  markdownEditor.setSelectionRange(selectStart, selectEnd);
   markdownEditor.focus();
 
   // Trigger input event for live preview

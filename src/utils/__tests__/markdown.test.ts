@@ -22,14 +22,39 @@ describe('markdown parser and sanitizer', () => {
     expect(html).toContain('Cell 1');
   });
 
-  it('should render footnotes properly', async () => {
-    const md = 'Here is a statement[^1].\n\n[^1]: This is the citation.';
+  it('should add slug id to headings for internal table of contents navigation', async () => {
+    const md = '# Main Heading\n\n## Section One\n\n### บทนำ';
     const html = await parse(md);
 
-    expect(html).toContain('class="footnote-ref"');
-    expect(html).toContain('href="#fn-1"');
+    expect(html).toContain('<h1 id="main-heading">');
+    expect(html).toContain('<h2 id="section-one">');
+    expect(html).toContain('<h3 id="บทนำ">');
+  });
+
+  it('should render footnotes properly with stable numbering for multiple references', async () => {
+    const md = 'Statement one[^1] and statement two[^1] followed by note two[^2].\n\n[^1]: Citation one\n[^2]: Citation two';
+    const html = await parse(md);
+
+    // Both references to footnote 1 should display [1]
+    expect(html).toContain('id="ref-1" class="text-sky-400 hover:text-sky-300 no-underline">1</a>');
+    expect(html).toContain('id="ref-1-2" class="text-sky-400 hover:text-sky-300 no-underline">1</a>');
+    // Reference to footnote 2 should display [2]
+    expect(html).toContain('id="ref-2" class="text-sky-400 hover:text-sky-300 no-underline">2</a>');
+
     expect(html).toContain('id="fn-1"');
+    expect(html).toContain('id="fn-2"');
     expect(html).toContain('class="footnotes');
+  });
+
+  it('should render task list checkboxes', async () => {
+    const md = '- [x] Completed task\n- [ ] Pending task';
+    const html = await parse(md);
+
+    expect(html).toContain('<input');
+    expect(html).toContain('type="checkbox"');
+    expect(html).toContain('checked');
+    expect(html).toContain('Completed task');
+    expect(html).toContain('Pending task');
   });
 
   describe('XSS Protection (DOMPurify Sanitization)', () => {

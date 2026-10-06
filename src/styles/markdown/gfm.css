@@ -38,11 +38,13 @@
 }
 
 /* Task Lists */
+.prose ul:has(> li > input[type="checkbox"]),
 .prose ul.task-list {
   list-style: none;
   padding-left: 0;
 }
 
+.prose li:has(> input[type="checkbox"]),
 .prose ul.task-list li {
   list-style: none;
   padding-left: 0;
@@ -54,15 +56,11 @@
   margin-right: 0.5rem;
 }
 
+.prose li:has(> input[type="checkbox"]:checked),
 .prose ul.task-list li input[type="checkbox"]:checked + p,
 .prose ul.task-list li input[type="checkbox"]:checked + span {
   text-decoration: line-through;
-  color: rgb(163 163 163);
-}
-
-.prose ul.task-list li input[type="checkbox"]:not(:checked) + p,
-.prose ul.task-list li input[type="checkbox"]:not(:checked) + span {
-  color: rgb(241 245 249);
+  color: rgb(156 163 175);
 }
 
 /* Blockquotes */
