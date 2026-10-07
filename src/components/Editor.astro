@@ -40,12 +40,14 @@ import UrlModal from './UrlModal.astro';
   import { handleEditorKeyDown } from '../utils/editor/keyboard-shortcuts';
   import { saveDraft, restoreDraft } from '../utils/editor/draft-persistence';
   import { generateUrl } from '../utils/editor/url-generator';
+  import { exportMarkdown } from '../utils/editor/export-markdown';
   import { setMobileView, setupResponsiveView } from '../utils/editor/responsive-view';
 
   const markdownEditor = document.getElementById('markdown-editor') as HTMLTextAreaElement | null;
   const markdownPreview = document.getElementById('markdown-preview') as HTMLElement | null;
   const charCount = document.getElementById('char-count') as HTMLElement | null;
   const generateUrlBtn = document.getElementById('generate-url-btn') as HTMLButtonElement | null;
+  const exportMdBtn = document.getElementById('export-md-btn') as HTMLButtonElement | null;
   const previewPane = document.getElementById('preview-pane') as HTMLElement | null;
   const editorPane = document.getElementById('editor-pane') as HTMLElement | null;
   const formattingTools = document.getElementById('formatting-tools') as HTMLElement | null;
@@ -141,6 +143,25 @@ import UrlModal from './UrlModal.astro';
     generateUrlBtn.addEventListener('click', () => {
       if (markdownEditor && urlModal && generatedUrl) {
         generateUrl(markdownEditor, currentColor, urlModal, generatedUrl);
+      }
+    });
+  }
+
+  if (exportMdBtn) {
+    exportMdBtn.addEventListener('click', () => {
+      if (!markdownEditor) return;
+      const markdown = markdownEditor.value;
+      exportMarkdown(markdown);
+
+      const label = exportMdBtn.querySelector('#export-md-label');
+      if (label) {
+        const originalHtml = label.innerHTML;
+        label.innerHTML = '<span class="text-emerald-400">Exported!</span>';
+        exportMdBtn.classList.add('border-emerald-500');
+        setTimeout(() => {
+          label.innerHTML = originalHtml;
+          exportMdBtn.classList.remove('border-emerald-500');
+        }, 2000);
       }
     });
   }
