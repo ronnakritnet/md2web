@@ -32,6 +32,11 @@ describe('export-markdown utility', () => {
       const md = '# Guide: 100% Tips & Tricks?! (2026)\n\nContent';
       expect(getExportFilename(md)).toBe('guide-100-tips-tricks-2026.md');
     });
+
+    it('should support international accented characters and non-Latin scripts', () => {
+      const md = '# Mon Résumé & Profil\n\nContenu';
+      expect(getExportFilename(md)).toBe('mon-résumé-profil.md');
+    });
   });
 
   describe('exportMarkdown', () => {

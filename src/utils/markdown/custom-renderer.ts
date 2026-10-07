@@ -6,7 +6,7 @@ export function createSlug(text: string): string {
     .toLowerCase()
     .trim()
     .replace(/<[^>]+>/g, '') // strip HTML tags
-    .replace(/[^\w\s\u0E00-\u0E7F-]/g, '')
+    .replace(/[^\p{L}\p{M}\p{N}\s_-]/gu, '')
     .replace(/\s+/g, '-')
     .replace(/^-+|-+$/g, '') || 'heading';
 }
